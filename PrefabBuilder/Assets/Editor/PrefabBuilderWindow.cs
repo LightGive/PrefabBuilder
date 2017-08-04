@@ -279,8 +279,9 @@ public class PrefabBuilderWindow : EditorWindow
 					Undo.RegisterCreatedObjectUndo(obj, "CreatePrefab");
 					obj.transform.SetParent(parentTransform);
 					obj.transform.position = tmpObj.transform.position;
-					obj.transform.rotation = tmpObj.transform.rotation;
-					obj.transform.localScale = tmpObj.transform.localScale;
+					obj.transform.localRotation = Quaternion.Euler(0.0f, SelectRotate, 0.0f);
+					var scale = SelectScale;
+                    obj.transform.localScale = new Vector3(scale, scale, scale);
 				}
 			}
 			else
