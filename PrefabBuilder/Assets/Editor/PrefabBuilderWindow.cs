@@ -91,6 +91,7 @@ public class PrefabBuilderWindow : EditorWindow
 	private int createNum = 0;
 	private int selectIdx = 0;
 	private int selectBrushMode = 0;
+
 	/// <summary>
 	/// 作成するかどうか
 	/// </summary>
@@ -324,6 +325,7 @@ public class PrefabBuilderWindow : EditorWindow
 		}
 		else if(selectBrushMode == 2)
 		{
+			Handles.color = Color.blue;
 			Handles.DrawWireCube(areaCenter, areaSize);
 		}
 
@@ -419,7 +421,6 @@ public class PrefabBuilderWindow : EditorWindow
 	{
 		if (prefabObjectList.Count > 0)
 		{
-			isCreateMode = GUILayout.Toggle(isCreateMode, isCreateMode ? "On" : "Off", "button");
 			var isChange = EditorGUI.EndChangeCheck();
 			if (isChange)
 				CheckTmpObject();
@@ -478,6 +479,11 @@ public class PrefabBuilderWindow : EditorWindow
 			selectInfoOffset = Mathf.Clamp(GUILayout.HorizontalSlider(selectInfoOffset, 0.0f, selectInfoGrid), 0.0f, selectInfoGrid);
 			selectInfoOffset = EditorGUILayout.FloatField(selectInfoOffset, GUILayout.Width(valueField));
 			EditorGUILayout.EndHorizontal();
+
+
+			EditorGUILayout.Space();
+			isCreateMode = GUILayout.Toggle(isCreateMode, isCreateMode ? "On" : "Off", "button");
+
 
 			//Scale、Rotateを変更したとき
 			if (isChangeTransform && tmpObj != null)
@@ -580,6 +586,47 @@ public class PrefabBuilderWindow : EditorWindow
 
 	private void AreaGUI()
 	{
+		float labelField = 40.0f;
+		float valueField = 40.0f;
+		float checkBoxField = 15.0f;
+
+		EditorGUILayout.Space();
+
+		//Scale
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label("Scale", GUILayout.Width(labelField));
+		isRandomScale = GUILayout.Toggle(isRandomScale, "", GUILayout.Width(checkBoxField));
+		if (isRandomScale)
+		{
+			selectScaleMin = Mathf.Clamp(EditorGUILayout.FloatField(selectScaleMin, GUILayout.Width(40)), 0.0f, selectScaleMax);
+			EditorGUILayout.MinMaxSlider(ref selectScaleMin, ref selectScaleMax, 0.0f, 10.0f);
+			selectScaleMax = Mathf.Clamp(EditorGUILayout.FloatField(selectScaleMax, GUILayout.Width(40)), selectScaleMin, 10.0f);
+		}
+		else
+		{
+			selectScale = GUILayout.HorizontalSlider(selectScale, 0.0f, 10.0f);
+			selectScale = EditorGUILayout.FloatField(selectScale, GUILayout.Width(valueField));
+		}
+		EditorGUILayout.EndHorizontal();
+
+
+		//Rotate
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label("Rotate", GUILayout.Width(labelField));
+		isRandomRotate = GUILayout.Toggle(isRandomRotate, "", GUILayout.Width(checkBoxField));
+		if (isRandomRotate)
+		{
+			selectRotateMin = Mathf.Clamp(EditorGUILayout.FloatField(selectRotateMin, GUILayout.Width(40)), 0.0f, selectRotateMax);
+			EditorGUILayout.MinMaxSlider(ref selectRotateMin, ref selectRotateMax, 0.0f, 360.0f);
+			selectRotateMax = Mathf.Clamp(EditorGUILayout.FloatField(selectRotateMax, GUILayout.Width(40)), selectRotateMin, 360.0f);
+		}
+		else
+		{
+			selectRotate = GUILayout.HorizontalSlider(selectRotate, 0.0f, 360.0f);
+			selectRotate = EditorGUILayout.FloatField(selectRotate, GUILayout.Width(valueField));
+		}
+		EditorGUILayout.EndHorizontal();
+
 		//StartPos EndPos
 		var floatFieldWidth = 35.0f;
 		EditorGUILayout.Space();
@@ -595,6 +642,29 @@ public class PrefabBuilderWindow : EditorWindow
 		areaSize.y = EditorGUILayout.FloatField(areaSize.y, GUILayout.Width(floatFieldWidth));
 		areaSize.z = EditorGUILayout.FloatField(areaSize.z, GUILayout.Width(floatFieldWidth));
 		EditorGUILayout.EndHorizontal();
+
+		EditorGUILayout.Space();
+		createNum = Mathf.Clamp(EditorGUILayout.IntField("CreateNum", createNum), 0, int.MaxValue);
+
+		if (GUILayout.Button("CreatePrefab"))
+		{
+			for (int i = 0; i < createNum; i++)
+			{
+				var pos = new Vector3(
+					Random.Range(areaCenter.x + (areaSize.x / 2.0f), areaCenter.x - (areaSize.x / 2.0f)),
+					Random.Range(areaCenter.y + (areaSize.y / 2.0f), areaCenter.y - (areaSize.y / 2.0f)),
+					Random.Range(areaCenter.z + (areaSize.z / 2.0f), areaCenter.z - (areaSize.z / 2.0f)));
+				var scale = SelectScale;
+				var rot = SelectRotate;
+				var obj = (GameObject)PrefabUtility.InstantiatePrefab(prefabObjectList[SelectIdx]);
+				obj.transform.localScale = new Vector3(scale, scale, scale);
+				obj.transform.rotation = Quaternion.Euler(0.0f, rot, 0.0f);
+				Undo.RegisterCreatedObjectUndo(obj, "CreatePrefab");
+				obj.transform.position = pos;
+				if (parentTransform != null)
+					obj.transform.SetParent(parentTransform);
+			}
+		}
 	}
 
 	/// <summary>
@@ -777,7 +847,6 @@ public class PrefabBuilderWindow : EditorWindow
 		{
 			if (tmpObj != null)
 			{
-				Debug.Log("削除");
 				DestroyImmediate(tmpObj);
 			}
 		}
@@ -792,8 +861,6 @@ public class PrefabBuilderWindow : EditorWindow
 	GameObject CreateTmpObj()
 	{
 		var obj = (GameObject)PrefabUtility.InstantiatePrefab(prefabObjectList[SelectIdx]);
-		//obj.transform.localScale = new Vector3(selectInfoScale, selectInfoScale, selectInfoScale);
-	//	obj.transform.localRotation = Quaternion.Euler(0.0f, selectInfoRotate, 0.0f);
 		
 		DestroyImmediate(obj.GetComponent<Collider>());
 		foreach (Transform child in obj.transform)
