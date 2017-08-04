@@ -512,6 +512,25 @@ public class PrefabBuilderWindow : EditorWindow
 		EditorGUILayout.EndHorizontal();
 		var isChangeTransform = EditorGUI.EndChangeCheck();
 
+		//StartPos EndPos
+		var floatFieldWidth = 35.0f;
+		EditorGUILayout.Space();
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label("Line Start Pos");
+		startPos.x = EditorGUILayout.FloatField(startPos.x, GUILayout.Width(floatFieldWidth));
+		startPos.y = EditorGUILayout.FloatField(startPos.y, GUILayout.Width(floatFieldWidth));
+		startPos.z = EditorGUILayout.FloatField(startPos.z, GUILayout.Width(floatFieldWidth));
+		EditorGUILayout.EndHorizontal();
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label("Line End Pos");
+		endPos.x = EditorGUILayout.FloatField(endPos.x, GUILayout.Width(floatFieldWidth));
+		endPos.y = EditorGUILayout.FloatField(endPos.y, GUILayout.Width(floatFieldWidth));
+		endPos.z = EditorGUILayout.FloatField(endPos.z, GUILayout.Width(floatFieldWidth));
+		EditorGUILayout.EndHorizontal();
+
+
+		EditorGUILayout.Space();
+
 		//作成するオブジェクトの数
 		createNum = Mathf.Clamp(EditorGUILayout.IntField("CreateNum", createNum), 0, int.MaxValue);
 		var lerp = 1.0f / (createNum + 1);
