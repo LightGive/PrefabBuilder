@@ -410,7 +410,7 @@ public class PrefabBuilderWindow : EditorWindow
 			//Offset
 			EditorGUILayout.BeginHorizontal();
 			GUILayout.Label("Offset", GUILayout.Width(labelField));
-			selectInfoOffset = GUILayout.HorizontalSlider(selectInfoOffset, 0.0f, 2.0f);
+			selectInfoOffset = Mathf.Clamp(GUILayout.HorizontalSlider(selectInfoOffset, 0.0f, selectInfoGrid), 0.0f, selectInfoGrid);
 			selectInfoOffset = EditorGUILayout.FloatField(selectInfoOffset, GUILayout.Width(valueField));
 			EditorGUILayout.EndHorizontal();
 
