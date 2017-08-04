@@ -307,6 +307,7 @@ public class PrefabBuilderWindow : EditorWindow
 		{
 			if (Event.current.type == EventType.MouseDown && Event.current.isMouse && Event.current.button == 0)
 			{
+				//クリックしたとき
 				Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
 				RaycastHit hit = new RaycastHit();
 				if (Physics.Raycast(ray, out hit, RayLength))
@@ -409,12 +410,12 @@ public class PrefabBuilderWindow : EditorWindow
 			if (isRandomScale)
 			{
 				selectScaleMin = Mathf.Clamp(EditorGUILayout.FloatField(selectScaleMin, GUILayout.Width(40)), 0.0f, selectScaleMax);
-				EditorGUILayout.MinMaxSlider(ref selectScaleMin, ref selectScaleMax, 0.0f, 100.0f);
-				selectScaleMax = Mathf.Clamp(EditorGUILayout.FloatField(selectScaleMax, GUILayout.Width(40)), selectScaleMin, 100.0f);
+				EditorGUILayout.MinMaxSlider(ref selectScaleMin, ref selectScaleMax, 0.0f, 10.0f);
+				selectScaleMax = Mathf.Clamp(EditorGUILayout.FloatField(selectScaleMax, GUILayout.Width(40)), selectScaleMin, 10.0f);
 			}
 			else
 			{
-				selectScale = GUILayout.HorizontalSlider(selectScale, 0.0f, 100.0f);
+				selectScale = GUILayout.HorizontalSlider(selectScale, 0.0f, 10.0f);
 				selectScale = EditorGUILayout.FloatField(selectScale, GUILayout.Width(valueField));
 			}
 			EditorGUILayout.EndHorizontal();
@@ -455,8 +456,8 @@ public class PrefabBuilderWindow : EditorWindow
 			//Scale、Rotateを変更したとき
 			if (isChangeTransform && tmpObj != null)
 			{
-				var scale = (selectScaleMin + selectScaleMax) / 2.0f;
-				var rot = (selectRotateMin + selectRotateMax) / 2.0f;
+				var scale = SelectTmpScale;
+				var rot = SelectTmpRotation;
 				tmpObj.transform.localRotation = Quaternion.Euler(0.0f, rot, 0.0f);
 				tmpObj.transform.localScale = new Vector3(scale, scale, scale);
 			}
@@ -470,22 +471,48 @@ public class PrefabBuilderWindow : EditorWindow
 	{
 		float labelField = 40.0f;
 		float valueField = 40.0f;
+		float checkBoxField = 15.0f;
 
 		EditorGUILayout.Space();
 		EditorGUI.BeginChangeCheck();
+
+		//Scale
 		EditorGUILayout.BeginHorizontal();
 		GUILayout.Label("Scale", GUILayout.Width(labelField));
-		//selectInfoScale = GUILayout.HorizontalSlider(selectInfoScale, 0.0f, 10.0f);
-		//selectInfoScale = EditorGUILayout.FloatField(selectInfoScale, GUILayout.Width(valueField));
+		isRandomScale = GUILayout.Toggle(isRandomScale, "", GUILayout.Width(checkBoxField));
+		if (isRandomScale)
+		{
+			selectScaleMin = Mathf.Clamp(EditorGUILayout.FloatField(selectScaleMin, GUILayout.Width(40)), 0.0f, selectScaleMax);
+			EditorGUILayout.MinMaxSlider(ref selectScaleMin, ref selectScaleMax, 0.0f, 10.0f);
+			selectScaleMax = Mathf.Clamp(EditorGUILayout.FloatField(selectScaleMax, GUILayout.Width(40)), selectScaleMin, 10.0f);
+		}
+		else
+		{
+			selectScale = GUILayout.HorizontalSlider(selectScale, 0.0f, 10.0f);
+			selectScale = EditorGUILayout.FloatField(selectScale, GUILayout.Width(valueField));
+		}
 		EditorGUILayout.EndHorizontal();
 
+
+		//Rotate
 		EditorGUILayout.BeginHorizontal();
 		GUILayout.Label("Rotate", GUILayout.Width(labelField));
-		//selectInfoRotate = GUILayout.HorizontalSlider(selectInfoRotate, 0.0f, 360.0f);
-		//selectInfoRotate = EditorGUILayout.FloatField(selectInfoRotate, GUILayout.Width(valueField));
+		isRandomRotate = GUILayout.Toggle(isRandomRotate, "", GUILayout.Width(checkBoxField));
+		if (isRandomRotate)
+		{
+			selectRotateMin = Mathf.Clamp(EditorGUILayout.FloatField(selectRotateMin, GUILayout.Width(40)), 0.0f, selectRotateMax);
+			EditorGUILayout.MinMaxSlider(ref selectRotateMin, ref selectRotateMax, 0.0f, 360.0f);
+			selectRotateMax = Mathf.Clamp(EditorGUILayout.FloatField(selectRotateMax, GUILayout.Width(40)), selectRotateMin, 360.0f);
+		}
+		else
+		{
+			selectRotate = GUILayout.HorizontalSlider(selectRotate, 0.0f, 360.0f);
+			selectRotate = EditorGUILayout.FloatField(selectRotate, GUILayout.Width(valueField));
+		}
 		EditorGUILayout.EndHorizontal();
 		var isChangeTransform = EditorGUI.EndChangeCheck();
 
+		//作成するオブジェクトの数
 		createNum = Mathf.Clamp(EditorGUILayout.IntField("CreateNum", createNum), 0, int.MaxValue);
 		var lerp = 1.0f / (createNum + 1);
 		if (GUILayout.Button("CreatePrefab"))
@@ -493,7 +520,11 @@ public class PrefabBuilderWindow : EditorWindow
 			for(int i = 0; i < createNum; i++)
 			{
 				var pos = Vector3.Lerp(startPos, endPos, (i * lerp) + lerp);
+				var scale = SelectScale;
+				var rot = SelectRotate;
 				var obj = (GameObject)PrefabUtility.InstantiatePrefab(prefabObjectList[SelectIdx]);
+				obj.transform.localScale = new Vector3(scale, scale, scale);
+				obj.transform.rotation = Quaternion.Euler(0.0f, rot, 0.0f);
 				Undo.RegisterCreatedObjectUndo(obj, "CreatePrefab");
 				obj.transform.position = pos;
 				if (parentTransform != null)
@@ -708,7 +739,7 @@ public class PrefabBuilderWindow : EditorWindow
 
 	void AlignGhostToSurface(Transform tmpObj, Vector3 hitNormal)
 	{
-		tmpObj.rotation = Quaternion.FromToRotation(Vector3.up, hitNormal) * Quaternion.Euler(new Vector3(0.0f, /*selectInfoRotate*/ 0.0f, 0.0f));
+		tmpObj.rotation = Quaternion.FromToRotation(Vector3.up, hitNormal) * Quaternion.Euler(new Vector3(0.0f, SelectTmpRotation, 0.0f));
 	}
 
 	private Vector3 GridToPosition(Vector3 _pos)
