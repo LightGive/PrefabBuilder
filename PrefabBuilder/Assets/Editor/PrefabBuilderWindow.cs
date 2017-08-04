@@ -107,6 +107,42 @@ public class PrefabBuilderWindow : EditorWindow
 	}
 
 	/// <summary>
+	/// 仮のオブジェクトのScale
+	/// </summary>
+	private float SelectTmpScale
+	{
+		get
+		{
+			if (isRandomScale)
+			{
+				return (selectScaleMin + selectScaleMax) / 2.0f;
+			}
+			else
+			{
+				return selectScale;
+			}
+		}
+	}
+
+	/// <summary>
+	/// 仮のオブジェクトのRotation
+	/// </summary>
+	private float SelectTmpRotation
+	{
+		get
+		{
+			if (isRandomRotate)
+			{
+				return (selectRotateMin + selectRotateMax) / 2.0f;
+			}
+			else
+			{
+				return selectRotate;
+			}
+		}
+	}
+
+	/// <summary>
 	/// Scaleの値
 	/// </summary>
 	private float SelectScale
@@ -279,7 +315,8 @@ public class PrefabBuilderWindow : EditorWindow
 					Undo.RegisterCreatedObjectUndo(obj, "CreatePrefab");
 					obj.transform.SetParent(parentTransform);
 					obj.transform.position = tmpObj.transform.position;
-					obj.transform.localRotation = Quaternion.Euler(0.0f, SelectRotate, 0.0f);
+					var rot = tmpObj.transform.eulerAngles;
+                    obj.transform.localRotation = Quaternion.Euler(rot.x, SelectRotate, rot.z);
 					var scale = SelectScale;
                     obj.transform.localScale = new Vector3(scale, scale, scale);
 				}
