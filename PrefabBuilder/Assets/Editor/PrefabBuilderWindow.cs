@@ -429,6 +429,8 @@ public class PrefabBuilderWindow : EditorWindow
 			float labelField = 40.0f;
 			float valueField = 35.0f;
 
+			EditorGUILayout.Space();
+
 			//Scale
 			EditorGUI.BeginChangeCheck();
 			EditorGUILayout.BeginHorizontal();
