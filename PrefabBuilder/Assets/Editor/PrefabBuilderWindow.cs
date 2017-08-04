@@ -64,6 +64,9 @@ public class PrefabBuilderWindow : EditorWindow
 	/// </summary>
 	private Transform parentTransform;
 
+	private Vector3 areaCenter = Vector3.zero;
+	private Vector3 areaSize = Vector3.one;
+
 	private List<Object> prefabObjectList = new List<Object>();
 	private float windowHalfSize = 100.0f;
 	private float textureWidth = 100.0f;
@@ -160,6 +163,9 @@ public class PrefabBuilderWindow : EditorWindow
 		}
 	}
 
+	/// <summary>
+	/// Rotate
+	/// </summary>
 	private float SelectRotate
 	{
 		get
@@ -215,7 +221,6 @@ public class PrefabBuilderWindow : EditorWindow
 	{
 		get { return windowWidth - windowLeftWidth - 80.0f; }
 	}
-
 	/// <summary>
 	/// ウィンドウの縦幅
 	/// </summary>
@@ -230,8 +235,26 @@ public class PrefabBuilderWindow : EditorWindow
 	{
 		get { return 200.0f; }
 	}
-
-
+	/// <summary>
+	/// 範囲を表示する色
+	/// </summary>
+	private Color areaColor
+	{
+		get
+		{
+			return new Color(0.0f, 0.0f, 0.5f, 0.1f);
+		}
+	}
+	/// <summary>
+	/// 範囲を表示する色
+	/// </summary>
+	private Color areaLineColor
+	{
+		get
+		{
+			return new Color(0.0f, 0.0f, 0.5f, 1.0f);
+		}
+	}
 
 	[MenuItem("Tools/PrefabBuilder")]
 	private static void Open()
@@ -258,7 +281,6 @@ public class PrefabBuilderWindow : EditorWindow
 		DrawLeftAreaGUI();
 		DrawRightAreaGUI();
 		EditorGUILayout.EndHorizontal();
-
 		Repaint();
 	}
 
@@ -300,6 +322,10 @@ public class PrefabBuilderWindow : EditorWindow
 				Handles.SphereHandleCap(0, pos, Quaternion.identity, HandleUtility.GetHandleSize(pos) * HandleSize, EventType.Repaint);
 			}
 		}
+		else if(selectBrushMode == 2)
+		{
+			Handles.DrawWireCube(areaCenter, areaSize);
+		}
 
 		Handles.BeginGUI();
 
@@ -337,7 +363,6 @@ public class PrefabBuilderWindow : EditorWindow
 
 
 		Handles.EndGUI();
-
 	}
 
 	private void DrawLeftAreaGUI()
@@ -349,6 +374,7 @@ public class PrefabBuilderWindow : EditorWindow
 			{
 				case 0: ClickToCreateToolGUI();	break;
 				case 1: DeplyToolGUI();			break;
+				case 2: AreaGUI();				break;
 			}
 		}
 		EditorGUILayout.EndVertical();
@@ -552,6 +578,25 @@ public class PrefabBuilderWindow : EditorWindow
 		}
 	}
 
+	private void AreaGUI()
+	{
+		//StartPos EndPos
+		var floatFieldWidth = 35.0f;
+		EditorGUILayout.Space();
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label("Area Center");
+		areaCenter.x = EditorGUILayout.FloatField(areaCenter.x, GUILayout.Width(floatFieldWidth));
+		areaCenter.y = EditorGUILayout.FloatField(areaCenter.y, GUILayout.Width(floatFieldWidth));
+		areaCenter.z = EditorGUILayout.FloatField(areaCenter.z, GUILayout.Width(floatFieldWidth));
+		EditorGUILayout.EndHorizontal();
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label("Area Size");
+		areaSize.x = EditorGUILayout.FloatField(areaSize.x, GUILayout.Width(floatFieldWidth));
+		areaSize.y = EditorGUILayout.FloatField(areaSize.y, GUILayout.Width(floatFieldWidth));
+		areaSize.z = EditorGUILayout.FloatField(areaSize.z, GUILayout.Width(floatFieldWidth));
+		EditorGUILayout.EndHorizontal();
+	}
+
 	/// <summary>
 	/// 検索バーを描画する
 	/// </summary>
@@ -738,6 +783,8 @@ public class PrefabBuilderWindow : EditorWindow
 		}
 	}
 
+
+
 	/// <summary>
 	/// プレビュー用オブジェクトを生成する
 	/// </summary>
@@ -802,4 +849,6 @@ public class PrefabBuilderWindow : EditorWindow
 		_path.Replace("\\", "/");
 		return _path;
 	}
+
+
 }
