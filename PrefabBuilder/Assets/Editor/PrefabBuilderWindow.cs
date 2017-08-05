@@ -327,15 +327,15 @@ public class PrefabBuilderWindow : EditorWindow
 		{
 			Handles.color = Color.blue;
 			Handles.DrawWireCube(areaCenter, areaSize);
-			var right =  (areaSize.x / 2.0f);
-			var top =  (areaSize.y / 2.0f);
-			var forward =  (areaSize.z / 2.0f);
-			var rightPos = Handles.FreeMoveHandle(areaCenter + new Vector3(right, 0.0f, 0.0f), Quaternion.identity, HandleUtility.GetHandleSize(endPos) * HandleSize, Vector3.one, Handles.CubeHandleCap);
-			var leftPos = Handles.FreeMoveHandle(areaCenter + new Vector3(-right, 0.0f, 0.0f), Quaternion.identity, HandleUtility.GetHandleSize(endPos) * HandleSize, Vector3.one, Handles.CubeHandleCap);
-			var topPos = Handles.FreeMoveHandle(areaCenter + new Vector3(0.0f, top, 0.0f), Quaternion.identity, HandleUtility.GetHandleSize(endPos) * HandleSize, Vector3.one, Handles.CubeHandleCap);
-			var bottomPos = Handles.FreeMoveHandle(areaCenter + new Vector3(0.0f, -top, 0.0f), Quaternion.identity, HandleUtility.GetHandleSize(endPos) * HandleSize, Vector3.one, Handles.CubeHandleCap);
-			var forwardPos = Handles.FreeMoveHandle(areaCenter + new Vector3(0.0f, 0.0f, forward), Quaternion.identity, HandleUtility.GetHandleSize(endPos) * HandleSize, Vector3.one, Handles.CubeHandleCap);
-			var backPos = Handles.FreeMoveHandle(areaCenter + new Vector3(0.0f, 0.0f, -forward), Quaternion.identity, HandleUtility.GetHandleSize(endPos) * HandleSize, Vector3.one, Handles.CubeHandleCap);
+			//var right =  (areaSize.x / 2.0f);
+			//var top =  (areaSize.y / 2.0f);
+			//var forward =  (areaSize.z / 2.0f);
+			//var rightPos = Handles.FreeMoveHandle(areaCenter + new Vector3(right, 0.0f, 0.0f), Quaternion.identity, HandleUtility.GetHandleSize(endPos) * HandleSize, Vector3.one, Handles.CubeHandleCap);
+			//var leftPos = Handles.FreeMoveHandle(areaCenter + new Vector3(-right, 0.0f, 0.0f), Quaternion.identity, HandleUtility.GetHandleSize(endPos) * HandleSize, Vector3.one, Handles.CubeHandleCap);
+			//var topPos = Handles.FreeMoveHandle(areaCenter + new Vector3(0.0f, top, 0.0f), Quaternion.identity, HandleUtility.GetHandleSize(endPos) * HandleSize, Vector3.one, Handles.CubeHandleCap);
+			//var bottomPos = Handles.FreeMoveHandle(areaCenter + new Vector3(0.0f, -top, 0.0f), Quaternion.identity, HandleUtility.GetHandleSize(endPos) * HandleSize, Vector3.one, Handles.CubeHandleCap);
+			//var forwardPos = Handles.FreeMoveHandle(areaCenter + new Vector3(0.0f, 0.0f, forward), Quaternion.identity, HandleUtility.GetHandleSize(endPos) * HandleSize, Vector3.one, Handles.CubeHandleCap);
+			//var backPos = Handles.FreeMoveHandle(areaCenter + new Vector3(0.0f, 0.0f, -forward), Quaternion.identity, HandleUtility.GetHandleSize(endPos) * HandleSize, Vector3.one, Handles.CubeHandleCap);
 			//areaCenter = new Vector3((rightPos.x + leftPos.x) / 2.0f, (topPos.y + bottomPos.y) / 2.0f, (forwardPos.z + backPos.z) / 2.0f);
 
 		}
